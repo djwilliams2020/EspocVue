@@ -5,16 +5,10 @@
     padding: 10px;
     text-align: center;
     background-color: aquamarine;
+    border-radius: 20px;
     color:black
   }
-  .darkBody {
-    background-color: black;
    
-  }
-  .lightBody{
-    background-color: grey;
-
-  }
   .guessing{
     display: inline-block;
     padding: 5px;
@@ -35,7 +29,7 @@
     width: 50%;
     /* width: 100%;
     height: 100%; */
-    background-color: black;
+    background-color: #282828;
     border: 3px solid #73AD21;
     color:white  ;
     border: 2px solid pink;

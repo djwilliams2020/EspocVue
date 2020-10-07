@@ -13,7 +13,7 @@
     <div id="app">
         <div class="container" v-bind:class="{darkBlock:isDark}">
             <div>{{instruction1}}</div>
-            <div>{{instruction1}}</div>
+            <div>{{instruction2}}</div>
 
             <h1>
                 {{header1}}
@@ -32,7 +32,7 @@
             </div>
 
             <h2>
-                <div id="score">score</div>
+                <div id="score">score: 0</div>
                 <div id="guess">Guess : 10</div>
             </h2>
 
@@ -52,17 +52,17 @@
             data: {
                 instruction1: 'Click on the symbol below the card to guess the next image.',
                 instruction2: 'If you score 5 out of 10, then you win ESP',
-                header1: 'THE',
+                header1: 'The',
                 header2: 'Guessing Game',
                 back: 'images/back.svg',
                 dark: 'images/dark.png',
                 isDark: false,
                 noOfGuess: 10,
-                pass: 5,
+                pass: 3,
                 score: 0,
-                winAudio: new Audio('sound/win.wav'),
+                winAudio: new Audio('sound/ding.mp3'),
                 guessChoices: ['star', 'circle', 'square', 'wave', 'plus'],
-                toogleMsg: 'Mode',
+                toogleMsg: 'Toggle BG Mode',
 
 
 
@@ -122,7 +122,7 @@
                 },
                 setBackGroundColor: function () {
                     if (this.isDark == true)
-                        document.body.style.backgroundColor = 'black'
+                        document.body.style.backgroundColor = '#282828'
 
                     else {
                         document.body.style.backgroundColor = 'aquamarine'
@@ -136,38 +136,48 @@
                     let current = this.guessChoices[randomIndex];
                     let mainCard = document.getElementById('maincard')
                     mainCard.src = `images/${current}.svg`
-                    console.log(current)
-                    console.log(userChoice)
 
                     if (current == userChoice) {
                         this.score++
                         document.getElementById('score').innerHTML = `score:  ${this.score}`
                         this.winAudio.play()
+                        setTimeout(function () {
+                            mainCard.src = 'images/back.svg'
+                        }, 1000)
                     }
                     else {
                         this.shakeAll()
+                        setTimeout(function () {
+                            mainCard.src = 'images/back.svg'
+                        }, 1000)
+
                     }
+
                     this.noOfGuess--
                     document.getElementById('guess').innerHTML = `Guess: ${this.noOfGuess}`
 
                     if (this.noOfGuess == 0) {
-                        mainCard.src = 'images/back.svg'
-
-
-                        const num = this.score
+                        setTimeout(function () {
+                            mainCard.src = 'images/back.svg'
+                        }, 500)
+                        let num = this.score
+                        let winner = this.pass
                         const OverallGuesses = 10
                         const msg1 = 'Congratulations you have earned ESP!'
                         const msg2 = 'Sorry you did not earn ESP!'
+                        console.log('pass is', this.pass)
+                        console.log('num is', this.score)
 
                         setTimeout(function () {
-                            if (this.num >= this.pass) {
+                            if (num >= winner) {
+
                                 alert(`Your score is: ${num} out of ${OverallGuesses} \n ${msg1}`)
                             } else {
                                 alert(`Your score is:  ${num} out of ${OverallGuesses} \n ${msg2}`)
 
                             }
                             location.reload()
-                        }, 500)
+                        }, 1000)
                     }
 
                 }
@@ -177,7 +187,7 @@
                 this.isDark = JSON.parse(this.getCookie('switch')) || false;
                 console.log('thisis on the mount', this.isDark)
                 if (this.isDark == true)
-                    this.bgColor = document.body.style.backgroundColor = 'black'
+                    this.bgColor = document.body.style.backgroundColor = '#282828'
 
                 else {
                     this.bgColor = document.body.style.backgroundColor = 'aquamarine'
