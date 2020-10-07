@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenner Card Game</title>
+    <link rel=" shortcut icon" type="image/png" href="images/fav.png" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="light-body-mode">
+    <div id="app">
+        <div class="container" v-bind:class="{darkBlock:isDark}">
+            <div>{{instruction1}}</div>
+            <div>{{instruction1}}</div>
+
+            <h1>
+                {{header1}}
+                <transition name="spin" appear>
+                    <span style="display: inline-block;">{{header2}}</span>
+                </transition>
+            </h1>
+
+            <div>
+                <img id="switch" @click="switchIsDark" class="switch" :src="dark" width="40" />
+            </div>
+
+
+            <div style="display:inline-block;">
+                <div>{{toogleMsg}}</div>
+            </div>
+
+            <h2>
+                <div id="score">score</div>
+                <div id="guess">Guess : 10</div>
+            </h2>
+
+            <div class="card">
+                <img id="maincard" :src="back" width="120" />
+                <div class="guessing" v-for="image of images">
+                    <img :src="image.imgSrc" :id="image.id" class="choice" @click="userChoice" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <script type="text/javascript" src="card.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                instruction1: 'Click on the symbol below the card to guess the next image.',
+                instruction2: 'If you score 5 out of 10, then you win ESP',
+                header1: 'THE',
+                header2: 'Guessing Game',
+                back: 'images/back.svg',
+                dark: 'images/dark.png',
+                isDark: false,
+                noOfGuess: 10,
+                pass: 5,
+                score: 0,
+                winAudio: new Audio('sound/win.wav'),
+                guessChoices: ['star', 'circle', 'square', 'wave', 'plus'],
+                toogleMsg: 'Mode',
+
+
+
+                images: [
+                    {
+                        imgSrc: 'images/circle.svg',
+                        id: 'circle'
+
+                    },
+                    {
+                        imgSrc: 'images/plus.svg',
+                        id: 'plus'
+
+                    },
+                    {
+                        imgSrc: 'images/square.svg',
+                        id: 'square'
+
+                    },
+                    {
+                        imgSrc: 'images/star.svg',
+                        id: 'star'
+                    },
+                    {
+                        imgSrc: 'images/wave.svg',
+                        id: 'wave'
+                    },
+
+                ]
+
+            },
+            watch: {
+
+
+
+            },
+            methods: {
+                setCookie: function (name, value) {
+                    document.cookie = `${name}=${value};`
+                },
+                getCookie: function (name) {
+                    const cookieObj = document.cookie.split(';').map(cookie => cookie.split('=')).reduce((accumulator, [key, value]) => ({ ...accumulator, [key.trim()]: decodeURIComponent(value) }), {})
+                    return cookieObj[name] || null
+                },
+                switchIsDark: function () {
+                    this.isDark = !this.isDark
+                    this.setCookie('switch', this.isDark)
+                    this.setCookie('color', this.isDark)
+                    this.setBackGroundColor()
+
+                },
+                shakeAll: function () {
+                    document.body.classList.toggle('setShake')
+                    setTimeout(function () {
+                        document.body.classList.toggle('setShake')
+                    }, 2000)
+                },
+                setBackGroundColor: function () {
+                    if (this.isDark == true)
+                        document.body.style.backgroundColor = 'black'
+
+                    else {
+                        document.body.style.backgroundColor = 'aquamarine'
+
+                    }
+
+                },
+                userChoice: function (id) {
+                    let userChoice = id.target.id
+                    let randomIndex = Math.floor((Math.random() * this.guessChoices.length))
+                    let current = this.guessChoices[randomIndex];
+                    let mainCard = document.getElementById('maincard')
+                    mainCard.src = `images/${current}.svg`
+                    console.log(current)
+                    console.log(userChoice)
+
+                    if (current == userChoice) {
+                        this.score++
+                        document.getElementById('score').innerHTML = `score:  ${this.score}`
+                        this.winAudio.play()
+                    }
+                    else {
+                        this.shakeAll()
+                    }
+                    this.noOfGuess--
+                    document.getElementById('guess').innerHTML = `Guess: ${this.noOfGuess}`
+
+                    if (this.noOfGuess == 0) {
+                        mainCard.src = 'images/back.svg'
+
+
+                        const num = this.score
+                        const OverallGuesses = 10
+                        const msg1 = 'Congratulations you have earned ESP!'
+                        const msg2 = 'Sorry you did not earn ESP!'
+
+                        setTimeout(function () {
+                            if (this.num >= this.pass) {
+                                alert(`Your score is: ${num} out of ${OverallGuesses} \n ${msg1}`)
+                            } else {
+                                alert(`Your score is:  ${num} out of ${OverallGuesses} \n ${msg2}`)
+
+                            }
+                            location.reload()
+                        }, 500)
+                    }
+
+                }
+
+            },
+            mounted: function () {
+                this.isDark = JSON.parse(this.getCookie('switch')) || false;
+                console.log('thisis on the mount', this.isDark)
+                if (this.isDark == true)
+                    this.bgColor = document.body.style.backgroundColor = 'black'
+
+                else {
+                    this.bgColor = document.body.style.backgroundColor = 'aquamarine'
+
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
